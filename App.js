@@ -10,16 +10,25 @@ const { StatusCodes } = require('http-status-codes');
 const isDatabaseInitiated = require('./Model/index');
 
 //import routes
+const auth = require('./Router/Auth')
+const user = require('./Router/User')
+const role = require('./Router/Role')
 
 //middlewares
 app.use(express.json()) //parse reqest body to JSON
 
 
 //routes
-
-app.use("/", (req, res) => res.status(StatusCodes.OK).send("<H1>YAZHL CITY APIs</H1>"))
+app.use("/API/V1/Auth", auth)
+app.use("/API/V1/User", user)
+app.use("/API/V1/Role", role)
+app.get("/", (req, res) => {
+    res.status(StatusCodes.OK).send("<H1>YAZHL CITY APIs</H1>")
+})
 
 app.use(notfound) //invalid routes
+
+
 app.use(errorHandler) // handle errors
 
 
