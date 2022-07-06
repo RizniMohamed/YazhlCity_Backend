@@ -5,23 +5,26 @@ const express = require('express')
 const app = express()
 
 const notfound = require('./middleware/notfound')
-const { errorHandler } = require('./middleware/errorHandler')
+const {errorHandler} = require('./middleware/errorHandler')
 const { StatusCodes } = require('http-status-codes');
 const isDatabaseInitiated = require('./Model/index');
 
 //import routes
-const auth = require('./Router/Auth')
-const user = require('./Router/User')
-const role = require('./Router/Role')
+const auth = require('./Router/User/Auth')
+const user = require('./Router/User/User')
+const role = require('./Router/User/Role')
 
 //middlewares
 app.use(express.json()) //parse reqest body to JSON
 
 
 //routes
-app.use("/API/V1/Auth", auth)
-app.use("/API/V1/User", user)
-app.use("/API/V1/Role", role)
+//User routes
+app.use("/API/V1/User/Auth", auth)
+app.use("/API/V1/User/User", user)
+app.use("/API/V1/User/Role", role)
+
+
 app.get("/", (req, res) => {
     res.status(StatusCodes.OK).send("<H1>YAZHL CITY APIs</H1>")
 })

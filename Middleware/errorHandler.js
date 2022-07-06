@@ -9,6 +9,7 @@ class APIError extends Error {
     }
 }
 
+
 const errorHandler = (err, req, res, next) => {
 
     if (err instanceof JsonWebTokenError)
@@ -16,11 +17,13 @@ const errorHandler = (err, req, res, next) => {
 
     if (err instanceof ValidationError)
         return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })
-        
-    if (err instanceof APIError)
+
+    if (err instanceof Error)
         return res.status(err.code).json({ message: err.message })
+
+
 
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message })
 }
 
-module.exports = { errorHandler, APIError }
+module.exports = {errorHandler, APIError}

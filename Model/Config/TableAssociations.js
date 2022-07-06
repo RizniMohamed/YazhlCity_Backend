@@ -14,8 +14,6 @@ User.hasOne(Auth, { // auth will have user id as foreign key
     },
 })
 
-Role.bulkCreate([{ name: "admin" }, { name: "manager" }, { name: "hosteller" }, { name: "user" }])
-
 Role.hasOne(User, { // user will have role id as foreign key
     constraints: {
         onDelete: "CASCADE",
@@ -23,6 +21,13 @@ Role.hasOne(User, { // user will have role id as foreign key
     },
     foreignKey: {
         name: 'roleID',
-        allowNull: false
+        allowNull: false,
+        defaultValue: 4
     },
-})
+});
+
+(async () => {
+    await Role.sync({ force: false });
+    const roles = await Role.findAll()
+    if (roles.length === 0) Role.bulkCreate([{ name: "admin" }, { name: "manager" }, { name: "hosteller" }, { name: "user" }])
+})()

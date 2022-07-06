@@ -1,4 +1,6 @@
+const { StatusCodes } = require('http-status-codes');
 const { DataTypes } = require('sequelize');
+const { APIError } = require('../../Middleware/errorHandler');
 const sequelize = require('../Config/Sequelize');
 
 const User = sequelize.define('User', {
@@ -12,35 +14,44 @@ const User = sequelize.define('User', {
     },
     gender: {
         type: DataTypes.ENUM('male', 'female'),
-        allowNull: false,
+        allowNull: true,
+        validate: {
+            isIn: {
+                args: [['male', 'female']],
+                msg: "Must be 'male' or 'female'"
+            }
+        }
     },
     address: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
     },
     mobile: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
         validate: {
             len: {
-                args: [9],
+                args: [9, 9],
                 msg: "Phone number need to be 9 digits (without first zero)",
             }
         }
     },
     nic: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+        type: DataTypes.STRING,
+        allowNull: true,
         validate: {
-            len: {
-                args: [10],
-                msg: "NIC is must be new 10 digit format",
+            checkNicFormate(nic) {
+                if (nic.length !== 10 && nic.length !== 12)
+                    throw new APIError("NIC is must be new 12 digit format or old format includes V at the end", StatusCodes.BAD_REQUEST)
+                if (nic.length == 10 && nic[nic.length - 1].toLowerCase() !== "v")
+                    throw new APIError("NIC is must includes V at the end", StatusCodes.BAD_REQUEST)
+                if (nic.length == 12 && (nic.includes("v") || nic.includes("V")))
+                    throw new APIError("NIC new format doesnt includes V", StatusCodes.BAD_REQUEST)
             }
         }
     }
 }, {
     timestamps: false,
 });
-
 
 module.exports = User

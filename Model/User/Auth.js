@@ -31,12 +31,9 @@ const Auth = sequelize.define('Auth', {
             const hashedPassword = bcrypt.hashSync(value, salt)
             this.setDataValue('password', hashedPassword);
         },
-
-
     }
 }, {
     timestamps: false,
 });
-
 
 module.exports = Auth

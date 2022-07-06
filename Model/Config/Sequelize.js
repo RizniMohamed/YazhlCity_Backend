@@ -1,4 +1,5 @@
-const {Sequelize} = require('sequelize')
+const { Sequelize } = require('sequelize')
+const createDatabase = require('./CreateDB')
 
 // connect database with sequlize
 const sequelize = new Sequelize(
@@ -9,6 +10,11 @@ const sequelize = new Sequelize(
         host: process.env.DB_HOST,
         dialect: 'mysql'
     }
-);
-
+).beforeConnect(async () => {
+    const status = await createDatabase()
+    if (!status) {
+        console.log("Database not created")
+        process.exit(1)
+    }
+})
 module.exports = sequelize
