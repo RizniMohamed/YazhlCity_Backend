@@ -17,7 +17,6 @@ const role = require('./Router/User/Role')
 //middlewares
 app.use(express.json()) //parse reqest body to JSON
 
-
 //routes
 //User routes
 app.use("/API/V1/User/Auth", auth)

@@ -7,7 +7,9 @@ const authorization = async (req, res, next) => {
 
     try {
         const token = header.split(' ')[1]
-        JWT.verify(token, process.env.JWT_SECRET)
+        const { email, userID, role } =  JWT.verify(token, process.env.JWT_SECRET)
+        const JWT_DATA = { email, userID, role }
+        req.JWT_DATA = JWT_DATA
         next()
     } catch (error) {
         throw new JWT.JsonWebTokenError("Invalid token", StatusCodes.UNAUTHORIZED)

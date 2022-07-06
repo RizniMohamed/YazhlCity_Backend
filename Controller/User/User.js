@@ -49,11 +49,10 @@ const getUsers = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const { userID, name, image, gender, adress, mobile, nic, roleID } = req.body
-
     if (userID) {
         await User.update({
             name,
-            image,
+            image: req.file.filename,
             gender,
             adress,
             mobile,
