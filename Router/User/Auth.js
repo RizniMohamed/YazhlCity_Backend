@@ -3,7 +3,7 @@ const auth = require('../../Middleware/auth')
 const { register, login, updateAuth } = require('../../Controller/User/Auth')
 
 router
-    .route('/')
+    .route('/password')
     .patch(updateAuth)
 router
     .route('/login')

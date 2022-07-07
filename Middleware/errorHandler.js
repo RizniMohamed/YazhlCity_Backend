@@ -9,7 +9,6 @@ class APIError extends Error {
     }
 }
 
-
 const errorHandler = (err, req, res, next) => {
 
     if (err instanceof JsonWebTokenError)
@@ -20,8 +19,6 @@ const errorHandler = (err, req, res, next) => {
 
     if (err instanceof Error)
         return res.status(err.code).json({ message: err.message })
-
-
 
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message })
 }

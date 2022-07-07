@@ -41,12 +41,14 @@ const User = sequelize.define('User', {
         allowNull: true,
         validate: {
             checkNicFormate(nic) {
-                if (nic.length !== 10 && nic.length !== 12)
-                    throw new APIError("NIC is must be new 12 digit format or old format includes V at the end", StatusCodes.BAD_REQUEST)
-                if (nic.length == 10 && nic[nic.length - 1].toLowerCase() !== "v")
-                    throw new APIError("NIC is must includes V at the end", StatusCodes.BAD_REQUEST)
-                if (nic.length == 12 && (nic.includes("v") || nic.includes("V")))
-                    throw new APIError("NIC new format doesnt includes V", StatusCodes.BAD_REQUEST)
+                if (nic) {
+                    if (nic.length !== 10 && nic.length !== 12)
+                        throw new APIError("NIC is must be new 12 digit format or old format includes V at the end", StatusCodes.BAD_REQUEST)
+                    if (nic.length == 10 && nic[nic.length - 1].toLowerCase() !== "v")
+                        throw new APIError("NIC is must includes V at the end", StatusCodes.BAD_REQUEST)
+                    if (nic.length == 12 && (nic.includes("v") || nic.includes("V")))
+                        throw new APIError("NIC new format doesnt includes V", StatusCodes.BAD_REQUEST)
+                }
             }
         }
     }

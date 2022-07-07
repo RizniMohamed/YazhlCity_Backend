@@ -22,24 +22,29 @@ const login = async (req, res) => {
         const token = JWT.sign(loginDetails, process.env.JWT_SECRET, { expiresIn: "1d" })
         loginDetails.token = token
         res.status(StatusCodes.OK).json(loginDetails)
-    }else{
-        throw new APIError("Username and password cannot be empty",StatusCodes.BAD_REQUEST)
+    } else {
+        throw new APIError("Username and password cannot be empty", StatusCodes.BAD_REQUEST)
     }
 }
 
 const register = async (req, res) => {
     const { email, password, name } = req.body
     const { id: userID } = await User.create({ name })
-    const newAuth = await Auth.create({ email, password, userID })
-    res.status(StatusCodes.CREATED).json(newAuth)
+    try {
+        const newAuth = await Auth.create({ email, password, userID })
+        res.status(StatusCodes.CREATED).json(newAuth)
+    } catch (error) {
+        await User.destroy({ where: { id: userID } })
+        throw new APIError(error.message, StatusCodes.BAD_REQUEST)
+    }
 }
 
 const updateAuth = async (req, res) => {
     const { userID, password } = req.body
-    if(userID){
+    if (userID) {
         await Auth.update({ password }, { where: { userID } });
         res.status(StatusCodes.OK).json(await Auth.findOne({ where: { userID } }))
-    }else{
+    } else {
         throw new APIError("UserID cannot be empty", StatusCodes.BAD_REQUEST)
     }
 }

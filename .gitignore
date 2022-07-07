@@ -1,4 +1,3 @@
-
 # Dependency directories
 node_modules/
 
@@ -6,5 +5,8 @@ node_modules/
 .env
 .env.test
 
-#Upload images
-Image/*
+#Upload images and files
+Storage/Image/boarding/*
+Storage/Image/room/*
+Storage/Image/user/*
+Storage/File/*

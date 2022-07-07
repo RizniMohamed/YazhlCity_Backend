@@ -5,8 +5,8 @@ const start = async () => {
         const sequelize = await require("./Config/Sequelize");
         await sequelize.authenticate()
         await require('./Config/TableAssociations')
-        // await sequelize.sync({force:true})
-        await sequelize.sync({ alter: true })
+        // await sequelize.sync({ alter: true })
+        await sequelize.sync()
         return true // database and sequalize initializtion success
     } catch (error) {
         console.log(error);

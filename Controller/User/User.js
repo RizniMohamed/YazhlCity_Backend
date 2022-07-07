@@ -1,16 +1,21 @@
 const { StatusCodes } = require('http-status-codes');
 const { APIError } = require('../../Middleware/errorHandler')
 const User = require('../../Model/User/User')
-const Auth = require('../../Model/User/Auth')
+const Auth = require('../../Model/User/Auth');
+const Role = require('../../Model/User/Role');
 
 const deleteUser = async (req, res) => {
     const { userID } = req.body
-    const deletedUser = await User.findOne({ where: { id: userID } })
-    if (deletedUser) {
-        await User.destroy({ where: { id: userID } });
-        res.status(StatusCodes.OK).json(deletedUser)
+    if (userID) {
+        const deletedUser = await User.findOne({ where: { id: userID } })
+        if (deletedUser) {
+            await User.destroy({ where: { id: userID } });
+            res.status(StatusCodes.OK).json(deletedUser)
+        } else {
+            throw new APIError("User not found", StatusCodes.NOT_FOUND)
+        }
     } else {
-        throw new APIError("User not found", StatusCodes.BAD_REQUEST)
+        throw new APIError("User id required", StatusCodes.BAD_REQUEST)
     }
 }
 
@@ -34,11 +39,10 @@ const getUsers = async (req, res) => {
         where,
         order,
         attributes,
-        include: [{
-            model: Auth,
-            where,
-            attributes: ['email']
-        }]
+        include: [
+            { model: Auth, attributes: ['email'] },
+            { model: Role, attributes: ['name'] },
+        ]
     })
 
     if (users.length !== 0)
@@ -48,19 +52,25 @@ const getUsers = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
-    const { userID, name, image, gender, adress, mobile, nic, roleID } = req.body
+    const { userID, name, gender, adress, mobile, nic, roleID } = req.body
     if (userID) {
-        await User.update({
-            name,
-            image: req.file.filename,
-            gender,
-            adress,
-            mobile,
-            nic,
-            roleID
-        }, { where: { id: userID } });
-        res.status(StatusCodes.OK).json(await User.findOne({ where: { id: userID } }))
-    }else{
+        const user = await User.findOne({ where: { id: userID } })
+        let path = req.file.path.split('\\').slice(1).join('/')
+        if (user) {
+            await User.update({
+                name,
+                image: path,
+                gender,
+                adress,
+                mobile,
+                nic,
+                roleID
+            }, { where: { id: userID } });
+            res.status(StatusCodes.OK).json(await User.findOne({ where: { id: userID } }))
+        }
+        else
+            throw new APIError("User not found", StatusCodes.NOT_FOUND)
+    } else {
         throw new APIError("User id is required", StatusCodes.BAD_REQUEST)
     }
 }
