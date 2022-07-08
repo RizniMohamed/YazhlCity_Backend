@@ -4,7 +4,7 @@ const { APIError } = require('../../Middleware/errorHandler')
 
 const getRoles = async (req, res) => {
     const allRoles = await Role.findAll()
-    if (allRoles)
+    if (allRoles.length !== 0)
         res.status(StatusCodes.OK).json(allRoles)
     else
         throw new APIError("No roles found", StatusCodes.NOT_FOUND)

@@ -3,37 +3,26 @@ const { APIError } = require('../../Middleware/errorHandler')
 const User = require('../../Model/User/User')
 const Auth = require('../../Model/User/Auth');
 const Role = require('../../Model/User/Role');
+const findQueryLogic = require('../FindQueryLogic');
 
 const deleteUser = async (req, res) => {
+    //filtering incoming data
     const { userID } = req.body
-    if (userID) {
-        const deletedUser = await User.findOne({ where: { id: userID } })
-        if (deletedUser) {
-            await User.destroy({ where: { id: userID } });
-            res.status(StatusCodes.OK).json(deletedUser)
-        } else {
-            throw new APIError("User not found", StatusCodes.NOT_FOUND)
-        }
-    } else {
-        throw new APIError("User id required", StatusCodes.BAD_REQUEST)
-    }
+
+    //validation
+    if (!userID) throw new APIError("User id required", StatusCodes.BAD_REQUEST)
+    const deletedUser = await User.findOne({ where: { id: userID } })
+    if (!deletedUser) throw new APIError("User not found", StatusCodes.NOT_FOUND)
+
+    //delete user
+    await User.destroy({ where: { id: userID } });
+
+    //send deleted user details
+    res.status(StatusCodes.OK).json(deletedUser)
 }
 
 const getUsers = async (req, res) => {
-    let order, attributes, where = {}
-    if (req.query.where) {
-        req.query.where.split(" ").map(data => {
-            temp = data.split('-')
-            where = { ...where, [temp[0]]: temp[1] }
-        })
-    }
-    if (req.query.order) {
-        order = [[
-            req.query.order.startsWith('-') ? req.query.order.substring(1) : req.query.order,
-            req.query.order.startsWith('-') ? 'DESC' : "ASC"
-        ]]
-    }
-    if (req.query.select) attributes = req.query.select.split(" ")
+    let { order, attributes, where } = findQueryLogic(req.query.where, req.query.order, req.query.select)
 
     const users = await User.findAll({
         where,
@@ -52,27 +41,28 @@ const getUsers = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
+    //filtering incoming data
     const { userID, name, gender, adress, mobile, nic, roleID } = req.body
-    if (userID) {
-        const user = await User.findOne({ where: { id: userID } })
-        let path = req.file.path.split('\\').slice(1).join('/')
-        if (user) {
-            await User.update({
-                name,
-                image: path,
-                gender,
-                adress,
-                mobile,
-                nic,
-                roleID
-            }, { where: { id: userID } });
-            res.status(StatusCodes.OK).json(await User.findOne({ where: { id: userID } }))
-        }
-        else
-            throw new APIError("User not found", StatusCodes.NOT_FOUND)
-    } else {
-        throw new APIError("User id is required", StatusCodes.BAD_REQUEST)
+
+    //validation
+    if (!userID) throw new APIError("User id is required", StatusCodes.BAD_REQUEST)
+    const user = await User.findOne({ where: { id: userID } })
+    if (!user) throw new APIError("User not found", StatusCodes.NOT_FOUND)
+
+    //update user
+    await User.update(
+        { name, gender, adress, mobile, nic, roleID },
+        { where: { id: userID } }
+    );
+
+    //update user image 
+    if (req.file) {
+        let userImage = req.file.path.split('\\').slice(1).join('/')
+        await User.update({ image: userImage }, { where: { id: userID } });
     }
+
+    //send updated data
+    res.status(StatusCodes.OK).json(await User.findOne({ where: { id: userID } }))
 }
 
 module.exports = {

@@ -16,8 +16,11 @@ const storage = multer.diskStorage({
         else
             cb(new APIError("ImageFolder is not defined. provide user or room or boarding", StatusCodes.BAD_REQUEST))
     },
-    filename: (req, file, cb) =>
-        cb(null, Date.now() + Math.floor(Math.random() * 10000).toString() + path.extname(file.originalname))
+filename: (req, file, cb) =>{
+
+    cb(null, Date.now() + Math.floor(Math.random() * 10000).toString() + path.extname(file.originalname))
+}
+
 })
 
 module.exports = multer({ storage })

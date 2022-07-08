@@ -1,18 +1,18 @@
 //initialize models
+//User schema
 const Auth = require('../User/Auth');
 const User = require('../User/User')
 const Role = require('../User/Role')
 
-// const Location = require('../Boarding/Location')
+//boarding schema
 const Boarding = require('../Boarding/Boarding')
 const Location = require('../Boarding/Location');
-const BoardingImage = require('../Boarding/Image');
+const BoardingImage = require('../Boarding/BoardingImage');
+const Washroom = require('../Boarding/Washroom');
+const Bathroom = require('../Boarding/Bathroom');
 
 User.hasOne(Auth, { // auth will have user id as foreign key
-    constraints: {
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
-    },
+    constraints: { onDelete: "CASCADE", onUpdate: "CASCADE" },
     foreignKey: {
         name: 'userID',
         allowNull: false
@@ -20,10 +20,7 @@ User.hasOne(Auth, { // auth will have user id as foreign key
 })
 
 User.belongsTo(Role, { // user will have role id as foreign key
-    constraints: {
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
-    },
+    constraints: { onDelete: "CASCADE", onUpdate: "CASCADE" },
     foreignKey: {
         name: 'roleID',
         allowNull: false,
@@ -32,10 +29,7 @@ User.belongsTo(Role, { // user will have role id as foreign key
 });
 
 Boarding.belongsTo(Location, { // boarding will have location id as foreign key
-    constraints: {
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
-    },
+    constraints: { onDelete: "CASCADE", onUpdate: "CASCADE" },
     foreignKey: {
         name: 'locationID',
         allowNull: false,
@@ -43,10 +37,7 @@ Boarding.belongsTo(Location, { // boarding will have location id as foreign key
 });
 
 Boarding.belongsTo(User, { // boarding will have user id as foreign key
-    constraints: {
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
-    },
+    constraints: { onDelete: "CASCADE", onUpdate: "CASCADE" },
     foreignKey: {
         name: 'userID',
         allowNull: false,
@@ -59,22 +50,38 @@ Boarding.belongsTo(User, { // boarding will have user id as foreign key
 });
 
 Boarding.hasMany(BoardingImage, { // boarding image will have boarding id as foreign key
-    constraints: {
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
-    },
+    constraints: { onDelete: "CASCADE", onUpdate: "CASCADE" },
     foreignKey: {
         name: 'boardingID',
         allowNull: false,
     },
 });
 
+Boarding.hasOne(Washroom, { // washroom will have boarding id as foreign key
+    constraints: { onDelete: "CASCADE", onUpdate: "CASCADE" },
+    foreignKey: {
+        name: 'boardingID',
+        allowNull: false,
+    },
+});
+
+Boarding.hasOne(Bathroom, { // bathroom will have boarding id as foreign key
+    constraints: { onDelete: "CASCADE", onUpdate: "CASCADE" },
+    foreignKey: {
+        name: 'boardingID',
+        allowNull: false,
+    },
+});
+
+//Initial data insertion
+//roles
 (async () => {
     await Role.sync();
     const roles = await Role.findAll()
     if (roles.length === 0) Role.bulkCreate([{ name: "admin" }, { name: "manager" }, { name: "hosteller" }, { name: "user" }])
 })();
 
+//locations
 (async () => {
     await Location.sync();
     const locations = await Location.findAll()

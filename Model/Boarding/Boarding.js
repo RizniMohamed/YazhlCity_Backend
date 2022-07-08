@@ -56,10 +56,6 @@ const Boarding = sequelize.define('Boarding', {
         allowNull: false,
         defaultValue: false
     },
-    orginality: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
     rating: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -86,7 +82,7 @@ const Boarding = sequelize.define('Boarding', {
         },
     },
 }, {
-    timestamps: false,
+    timestamps: true,
 }
 );
 
