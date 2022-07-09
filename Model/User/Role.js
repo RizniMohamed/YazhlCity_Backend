@@ -3,8 +3,13 @@ const sequelize = require('../Config/Sequelize');
 
 const Role = sequelize.define('role', {
     name: {
-        type: DataTypes.ENUM("admin", "manager", "hosteller", "user"),
+        type: DataTypes.STRING,
         allowNull: false,
+        unique: {
+            args: true,
+            name: "name",
+            msg: 'Role name already in use'
+        }
     },
 }, {
     timestamps: false,

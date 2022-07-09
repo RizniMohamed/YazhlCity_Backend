@@ -11,6 +11,10 @@ const BoardingImage = require('../Boarding/BoardingImage');
 const Washroom = require('../Boarding/Washroom');
 const Bathroom = require('../Boarding/Bathroom');
 
+//room schema
+const Facility = require('../Room/Facility.js')
+const Room = require('../Room/Room.js')
+
 User.hasOne(Auth, { // auth will have user id as foreign key
     constraints: { onDelete: "CASCADE", onUpdate: "CASCADE" },
     foreignKey: {
@@ -71,6 +75,19 @@ Boarding.hasOne(Bathroom, { // bathroom will have boarding id as foreign key
         name: 'boardingID',
         allowNull: false,
     },
+});
+
+Boarding.hasMany(Room, {
+    constraints: { onDelete: "CASCADE", onUpdate: "CASCADE" },
+    foreignKey: {
+        name: 'boardingID',
+        allowNull: false,
+    },
+});
+
+Room.belongsToMany(Facility, {
+    through: "Room_Facility",
+    timestamps: false,
 });
 
 //Initial data insertion
@@ -146,5 +163,18 @@ Boarding.hasOne(Bathroom, { // bathroom will have boarding id as foreign key
         { name: "Vellampakkaddy" },
         { name: "Vidattalpalai" },
         { name: "Viyaparimulai" },
+    ])
+})();
+
+//locations
+(async () => {
+    await Facility.sync();
+    const facility = await Facility.findAll()
+    if (facility.length === 0) Facility.bulkCreate([
+        { name: "Table" },
+        { name: "Chair" },
+        { name: "Metress" },
+        { name: "Bed" },
+        { name: "Fan" },
     ])
 })();

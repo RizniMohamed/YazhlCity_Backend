@@ -39,6 +39,11 @@ const User = sequelize.define('User', {
     nic: {
         type: DataTypes.STRING,
         allowNull: true,
+        unique: {
+            args: true,
+            name: "nic",
+            msg: 'NIC already in use'
+        },
         validate: {
             checkNicFormate(nic) {
                 if (nic) {

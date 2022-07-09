@@ -60,7 +60,7 @@ const getBoardings = async (req, res) => {
 
     const boardings = await Boarding.findAll({
         where,
-        order,
+        order: order ??  ['updatedAt'],
         attributes,
         include: [
             { model: Location, attributes: ['name'] },

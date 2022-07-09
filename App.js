@@ -10,24 +10,18 @@ const { StatusCodes } = require('http-status-codes');
 const isDatabaseInitiated = require('./Model/index');
 
 //import routes
-const auth = require('./Router/User/Auth')
-const user = require('./Router/User/User')
-const role = require('./Router/User/Role')
-const location = require('./Router/Boarding/Location')
-const boarding = require('./Router/Boarding/Boading')
+const user = require('./Router/User')
+const boarding = require('./Router/Boading')
+const room = require('./Router/Room')
 
 //middlewares
 app.use(express.json()) //parse reqest body to JSON
 app.use(express.static('./Storage')) //make image file is accessiblie to frontend
 
 //routes
-//User routes
-app.use("/API/V1/User", auth)
 app.use("/API/V1/User", user)
-app.use("/API/V1/User/Role", role)
-//Boarding routes
-app.use("/API/V1/Boarding/location", location)
 app.use("/API/V1/Boarding", boarding)
+app.use("/API/V1/Room", room)
 
 app.get("/", (req, res) => {
     res.status(StatusCodes.OK).send("<H1>YAZHL CITY APIs</H1>")

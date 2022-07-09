@@ -1,18 +1,18 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../Config/Sequelize');
 
-const Location = sequelize.define('Location', {
+const Facility = sequelize.define('Facility', {
     name: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: {
             args: true,
             name: "name",
-            msg: 'location name already in use'
+            msg: 'facility name already in use'
         }
     },
 }, {
     timestamps: false,
 });
 
-module.exports = Location
+module.exports = Facility

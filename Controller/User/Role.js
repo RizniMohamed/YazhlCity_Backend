@@ -3,7 +3,7 @@ const Role = require('../../Model/User/Role')
 const { APIError } = require('../../Middleware/errorHandler')
 
 const getRoles = async (req, res) => {
-    const allRoles = await Role.findAll()
+    const allRoles = await Role.findAll({ order: ['id'] })
     if (allRoles.length !== 0)
         res.status(StatusCodes.OK).json(allRoles)
     else

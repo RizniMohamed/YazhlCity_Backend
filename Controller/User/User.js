@@ -5,6 +5,27 @@ const Auth = require('../../Model/User/Auth');
 const Role = require('../../Model/User/Role');
 const findQueryLogic = require('../FindQueryLogic');
 
+
+const register = async (req, res) => {
+    //filtering incoming data
+    const { email, password, name } = req.body
+
+    //create user
+    const { id: userID } = await User.create({ name: name })
+
+    try {
+        //create auth for created user
+        const newAuth = await Auth.create({ email: email, password: password, userID: userID })
+        //send created user details
+        res.status(StatusCodes.CREATED).json({ email, name, role: "user" })
+    } catch (error) {
+        //if error on auth creation, delete created user
+        await User.destroy({ where: { id: userID } })
+        //send error message
+        throw new APIError(error.message, StatusCodes.BAD_REQUEST)
+    }
+}
+
 const deleteUser = async (req, res) => {
     //filtering incoming data
     const { userID } = req.body
@@ -26,7 +47,7 @@ const getUsers = async (req, res) => {
 
     const users = await User.findAll({
         where,
-        order,
+        order : order ??  ['id'],
         attributes,
         include: [
             { model: Auth, attributes: ['email'] },
@@ -68,5 +89,6 @@ const updateUser = async (req, res) => {
 module.exports = {
     deleteUser,
     getUsers,
-    updateUser
+    updateUser,
+    register
 }

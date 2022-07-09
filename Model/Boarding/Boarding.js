@@ -28,12 +28,12 @@ const Boarding = sequelize.define('Boarding', {
         }
     },
     roomType: {
-        type: DataTypes.ENUM('single', 'share'),
+        type: DataTypes.ENUM('single', 'share', 'both'),
         allowNull: false,
         validate: {
             isIn: {
                 args: [['single', 'share']],
-                msg: "Must be 'single' or 'share'"
+                msg: "Must be 'single' or 'share' or 'both'"
             }
         }
     },
