@@ -63,7 +63,7 @@ const getUsers = async (req, res) => {
 
 const updateUser = async (req, res) => {
     //filtering incoming data
-    const { userID, name, gender, adress, mobile, nic, roleID } = req.body
+    const { userID, name, gender, adress, mobile, nic, roleID, roomID } = req.body
 
     //validation
     if (!userID) throw new APIError("User id is required", StatusCodes.BAD_REQUEST)
@@ -72,7 +72,7 @@ const updateUser = async (req, res) => {
 
     //update user
     await User.update(
-        { name, gender, adress, mobile, nic, roleID },
+        { name, gender, adress, mobile, nic, roleID, roomID },
         { where: { id: userID } }
     );
 

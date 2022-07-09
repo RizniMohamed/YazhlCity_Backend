@@ -90,6 +90,14 @@ Room.belongsToMany(Facility, {
     timestamps: false,
 });
 
+Room.hasMany(User, {
+    constraints: { onDelete: "CASCADE", onUpdate: "CASCADE" },
+    foreignKey: {
+        name: 'roomID',
+        allowNull: true,
+    },
+});
+
 //Initial data insertion
 //roles
 (async () => {

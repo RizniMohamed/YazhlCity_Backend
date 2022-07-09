@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes")
 const { APIError } = require("../../Middleware/errorHandler")
 const Boarding = require("../../Model/Boarding/Boarding")
+const Facility = require("../../Model/Room/Facility")
 const Room = require("../../Model/Room/Room")
 const findQueryLogic = require("../FindQueryLogic")
 
@@ -18,14 +19,14 @@ const createRoom = async (req, res) => {
     const roomImage = req.file.path.split('\\').slice(1).join('/')
     const room = await Room.create({ room_number: roomNumber, image: roomImage, person_count: personCount, price: price, type: type, boardingID: boardingID })
 
-
-    // Room.addFacility(room.id, facilityID)
+    // insert facilities
+    await room.addFacility(eval(facilityID))
 
     // send created room
     res.status(StatusCodes.CREATED).json(
         await Room.findOne({
             where: { id: room.id },
-
+            include: { model: Facility, attributes: ['id', 'name'] }
         })
     )
 }
@@ -80,6 +81,7 @@ const getRooms = async (req, res) => {
         where,
         order: order ?? ['room_number'],
         attributes,
+        include: { model: Facility, attributes: ['id', 'name'] }
     })
 
     if (rooms.length !== 0)
