@@ -3,7 +3,9 @@ const { APIError } = require('../../Middleware/errorHandler')
 const User = require('../../Model/User/User')
 const Auth = require('../../Model/User/Auth');
 const Role = require('../../Model/User/Role');
+const Payment = require('../../Model/Payment/Payment')
 const findQueryLogic = require('../FindQueryLogic');
+const Room = require('../../Model/Room/Room');
 
 
 const register = async (req, res) => {
@@ -47,7 +49,7 @@ const getUsers = async (req, res) => {
 
     const users = await User.findAll({
         where,
-        order : order ??  ['id'],
+        order: order ?? ['id'],
         attributes,
         include: [
             { model: Auth, attributes: ['email'] },
@@ -63,7 +65,7 @@ const getUsers = async (req, res) => {
 
 const updateUser = async (req, res) => {
     //filtering incoming data
-    const { userID, name, gender, adress, mobile, nic, roleID, roomID } = req.body
+    const { userID, name, gender, address, mobile, nic, roleID, roomID } = req.body
 
     //validation
     if (!userID) throw new APIError("User id is required", StatusCodes.BAD_REQUEST)
@@ -72,7 +74,7 @@ const updateUser = async (req, res) => {
 
     //update user
     await User.update(
-        { name, gender, adress, mobile, nic, roleID, roomID },
+        { name: name, gender: gender, address: address, mobile: mobile, nic: nic },
         { where: { id: userID } }
     );
 
@@ -81,6 +83,7 @@ const updateUser = async (req, res) => {
         let userImage = req.file.path.split('\\').slice(1).join('/')
         await User.update({ image: userImage }, { where: { id: userID } });
     }
+   
 
     //send updated data
     res.status(StatusCodes.OK).json(await User.findOne({ where: { id: userID } }))

@@ -15,6 +15,11 @@ const Bathroom = require('../Boarding/Bathroom');
 const Facility = require('../Room/Facility.js')
 const Room = require('../Room/Room.js')
 
+//payment schema
+const Payment = require('../Payment/Payment.js')
+const PaymentType = require('../Payment/PaymentType.js');
+const sequelize = require('./Sequelize');
+
 User.hasOne(Auth, { // auth will have user id as foreign key
     constraints: { onDelete: "CASCADE", onUpdate: "CASCADE" },
     foreignKey: {
@@ -77,7 +82,7 @@ Boarding.hasOne(Bathroom, { // bathroom will have boarding id as foreign key
     },
 });
 
-Boarding.hasMany(Room, {
+Boarding.hasMany(Room, { // room will have boarding id as foreign key
     constraints: { onDelete: "CASCADE", onUpdate: "CASCADE" },
     foreignKey: {
         name: 'boardingID',
@@ -85,12 +90,12 @@ Boarding.hasMany(Room, {
     },
 });
 
-Room.belongsToMany(Facility, {
+Room.belongsToMany(Facility, { // room and facility will joined by room_facility table
     through: "Room_Facility",
     timestamps: false,
 });
 
-Room.hasMany(User, {
+Room.hasMany(User, { // user will have room id as foreign key
     constraints: { onDelete: "CASCADE", onUpdate: "CASCADE" },
     foreignKey: {
         name: 'roomID',
@@ -98,91 +103,18 @@ Room.hasMany(User, {
     },
 });
 
-//Initial data insertion
-//roles
-(async () => {
-    await Role.sync();
-    const roles = await Role.findAll()
-    if (roles.length === 0) Role.bulkCreate([{ name: "admin" }, { name: "manager" }, { name: "hosteller" }, { name: "user" }])
-})();
+Payment.belongsTo(PaymentType, { // payment will have payment type id as foreign key
+    constraints: { onDelete: "CASCADE", onUpdate: "CASCADE" },
+    foreignKey: {
+        name: 'paymentTypeID',
+        allowNull: true,
+    },
+});
 
-//locations
-(async () => {
-    await Location.sync();
-    const locations = await Location.findAll()
-    if (locations.length === 0) Location.bulkCreate([
-        { name: "Achchuveli" },
-        { name: "Alaveddy" },
-        { name: "Aliyawalai" },
-        { name: "Araly" },
-        { name: "Chankanai" },
-        { name: "Chavakachcheri" },
-        { name: "Chunnakam" },
-        { name: "Erlalai" },
-        { name: "Kadduvan" },
-        { name: "Kaithady" },
-        { name: "Kankesanthurai" },
-        { name: "Karainagar" },
-        { name: "Karaveddy" },
-        { name: "Kayts" },
-        { name: "Keerimalai" },
-        { name: "Kerudavil" },
-        { name: "Kodikamam" },
-        { name: "Kokkuvil" },
-        { name: "Kondavil" },
-        { name: "Kopay" },
-        { name: "Mallakam" },
-        { name: "Manipay" },
-        { name: "Mirusuvil" },
-        { name: "Moolai" },
-        { name: "Myliddy" },
-        { name: "Nagar Kovil" },
-        { name: "Nallur" },
-        { name: "Navaly" },
-        { name: "Navatkuli" },
-        { name: "Nelliady" },
-        { name: "Nelliyady" },
-        { name: "Palaly" },
-        { name: "Point Pedro" },
-        { name: "Polikandy" },
-        { name: "Puttur" },
-        { name: "Sandilipay" },
-        { name: "Tellippalai" },
-        { name: "Thampalai" },
-        { name: "Thirunelveli" },
-        { name: "Thondaimanaru" },
-        { name: "Thoppu" },
-        { name: "Thumpalai" },
-        { name: "Tirunelveli East" },
-        { name: "Tirunelveli West" },
-        { name: "Udupiddy" },
-        { name: "Uduthurai" },
-        { name: "Uduvil" },
-        { name: "Urelu" },
-        { name: "Urumpirai" },
-        { name: "Vaddukkoddai East" },
-        { name: "Vaddukkoddai West" },
-        { name: "Vaddukoddai" },
-        { name: "Valalai" },
-        { name: "Vallipuram" },
-        { name: "Valveddi" },
-        { name: "Varani" },
-        { name: "Velanai" },
-        { name: "Vellampakkaddy" },
-        { name: "Vidattalpalai" },
-        { name: "Viyaparimulai" },
-    ])
-})();
-
-//locations
-(async () => {
-    await Facility.sync();
-    const facility = await Facility.findAll()
-    if (facility.length === 0) Facility.bulkCreate([
-        { name: "Table" },
-        { name: "Chair" },
-        { name: "Metress" },
-        { name: "Bed" },
-        { name: "Fan" },
-    ])
-})();
+User.hasMany(Payment, {
+    constraints: { onDelete: "CASCADE", onUpdate: "CASCADE" },
+    foreignKey: {
+        name: 'userID',
+        allowNull: false,
+    },
+});

@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../Config/Sequelize');
 
-const BoardingImage = sequelize.define('Boarding_image', {
-    image: {
+const PaymentType = sequelize.define('Payment_type', {
+    name: {
         type: DataTypes.STRING,
         allowNull: false,
     },
@@ -10,4 +10,4 @@ const BoardingImage = sequelize.define('Boarding_image', {
     timestamps: false,
 });
 
-module.exports = BoardingImage
+module.exports = PaymentType

@@ -8,6 +8,7 @@ const Role = require('../../Model/User/Role')
 const BoardingImage = require('../../Model/Boarding/BoardingImage')
 const Washroom = require('../../Model/Boarding/Washroom')
 const Bathroom = require('../../Model/Boarding/Bathroom')
+const Payment = require('../../Model/Payment/Payment')
 const findQueryLogic = require('../FindQueryLogic')
 
 const createBoarding = async (req, res) => {
@@ -39,6 +40,9 @@ const createBoarding = async (req, res) => {
 
     // promote user to manager
     await User.update({ roleID: 2 }, { where: { id: userID } })
+
+    //create manager first payment
+    await Payment.create({ amount: process.env.MANAGER_FEE, userID: userID })
 
     // send created boarding
     res.status(StatusCodes.CREATED).json(

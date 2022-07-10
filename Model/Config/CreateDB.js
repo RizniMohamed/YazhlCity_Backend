@@ -7,7 +7,7 @@ const createDatabase = async () => {
         user: process.env.DB_USERNAME,
         password: process.env.DB_Password
     })
-    const status = await conn.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME}`) // create database in mysql
+    await conn.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME}`) // create database in mysql
     const isDatabaseExists = await conn.query(`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '${process.env.DB_NAME}'`)
     return (isDatabaseExists[0][0]['SCHEMA_NAME'] === process.env.DB_NAME);
 }
