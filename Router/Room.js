@@ -25,5 +25,4 @@ router
     .route('/facility')
     .get(getFacilities)
 
-
 module.exports = router

@@ -1,18 +1,16 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../Config/Sequelize');
 
-const Payment = sequelize.define('Payment', {
+const User_Notification = sequelize.define('User_Notification', {
+
     status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
     },
-    amount: {
-        type: DataTypes.DOUBLE,
-        allowNull: false,
-    },
+
 }, {
     timestamps: true,
 });
 
-module.exports = Payment
+module.exports = User_Notification

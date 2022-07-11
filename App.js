@@ -14,6 +14,7 @@ const user = require('./Router/User')
 const boarding = require('./Router/Boading')
 const room = require('./Router/Room')
 const payment = require('./Router/Payment')
+const notification = require('./Router/Notifcation')
 
 //middlewares
 app.use(express.json()) //parse reqest body to JSON
@@ -24,6 +25,7 @@ app.use("/API/V1/User", user)
 app.use("/API/V1/Boarding", boarding)
 app.use("/API/V1/Room", room)
 app.use("/API/V1/Payment", payment)
+app.use("/API/V1/Notification", notification)
 
 app.get("/", (req, res) => {
     res.status(StatusCodes.OK).send("<H1>YAZHL CITY APIs</H1>")

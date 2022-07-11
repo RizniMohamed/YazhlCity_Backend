@@ -20,6 +20,10 @@ const Payment = require('../Payment/Payment.js')
 const PaymentType = require('../Payment/PaymentType.js');
 const sequelize = require('./Sequelize');
 
+//notification schema
+const Notification = require('../Notification/Notification')
+const User_Notification = require('../Notification/User_Notification')
+
 User.hasOne(Auth, { // auth will have user id as foreign key
     constraints: { onDelete: "CASCADE", onUpdate: "CASCADE" },
     foreignKey: {
@@ -117,4 +121,9 @@ User.hasMany(Payment, {
         name: 'userID',
         allowNull: false,
     },
+});
+
+Notification.belongsToMany(User, { // room and facility will joined by room_facility table
+    through: "User_Notification",
+    timestamps: false,
 });
