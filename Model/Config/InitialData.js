@@ -5,13 +5,14 @@ const Role = require("../User/Role");
 
 //roles
 (async () => {
-
+    await Role.sync();
     const roles = await Role.findAll()
     if (roles.length === 0) Role.bulkCreate([{ name: "admin" }, { name: "manager" }, { name: "hosteller" }, { name: "user" }])
 })();
 
 //locations
 (async () => {
+    await Location.sync();
     const locations = await Location.findAll()
     if (locations.length === 0) Location.bulkCreate([
         { name: "Achchuveli" },
@@ -79,6 +80,7 @@ const Role = require("../User/Role");
 
 //locations
 (async () => {
+    await Facility.sync();
     const facility = await Facility.findAll()
     if (facility.length === 0) Facility.bulkCreate([
         { name: "Table" },
@@ -91,6 +93,7 @@ const Role = require("../User/Role");
 
 //payment type
 (async () => {
+    await PaymentType.sync();
     const paymentType = await PaymentType.findAll()
     if (paymentType.length === 0) PaymentType.bulkCreate([
         { name: "Credit Card" },
