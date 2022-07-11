@@ -26,6 +26,11 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: true,
     },
+    active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue : true
+    },
     mobile: {
         type: DataTypes.INTEGER,
         allowNull: true,

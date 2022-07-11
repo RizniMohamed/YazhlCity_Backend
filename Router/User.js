@@ -20,8 +20,8 @@ router
     .route('/')
     .get(auth, getUsers)
     .delete(auth, deleteUser)
+    .post(auth, uploadMiddleware, updateUser)
     .patch(auth, uploadMiddleware, updateUser)
-    .post(register)
 
 router
     .route('/role')
@@ -36,11 +36,15 @@ router
     .post(login)
 
 router
+    .route('/register')
+    .post(register)
+
+router
     .route('/subscribe')
-    .patch(subscribe)
+    .post(subscribe)
 
 router
     .route('/unsubscribe')
-    .patch(unsubscribe)
+    .post(unsubscribe)
 
 module.exports = router

@@ -4,9 +4,9 @@ const Payment = require('../Payment/Payment');
 const Room = require('../Room/Room');
 const User = require('../User/User');
 
-// Create payments on each 1st day of month 0 0 0 1 1 0
-            // S M H D M W
-cron.schedule('1 * * * * *', async () => {
+// Create payments on each 1st day of month
+            // S M H D M W <- runs on first day of each month
+cron.schedule('0 0 0 1 * *', async () => {
     console.log("Payment event started");
     //create monthly payment for hosttellers
     const hostellers = await User.findAll({ where: { roomID: !null } })
@@ -24,4 +24,21 @@ cron.schedule('1 * * * * *', async () => {
         })
     }
     console.log("Payment event end");
+});
+
+// remove access to the persons who not paid for 2 months
+            // S M H D M W  <- runs on every miniute 
+cron.schedule('1 * * * * *', async () => {
+    console.log("Payment check event started");
+    const users = await User.findAll()
+    users.forEach(async user => {
+        const payments = await Payment.findAll({ where: { userID: user.id } })
+        let counter = 0
+        payments.forEach(payment => (payment.status == false) ? counter += 1 : null)
+        if (counter >= 2)
+            await User.update({ active: false }, { where: { id: user.id } })
+        else
+            await User.update({ active: true }, { where: { id: user.id } })
+    })
+    console.log("Payment check event end");
 });

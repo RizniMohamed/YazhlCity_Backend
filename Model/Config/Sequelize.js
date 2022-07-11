@@ -9,7 +9,8 @@ const sequelize = new Sequelize(
     {
         host: process.env.DB_HOST,
         dialect: 'mysql',
-        logging: false
+        logging: false,
+        timezone: process.env.DB_TIMEZONE
     }
 ).beforeConnect(async () => {
     const status = await createDatabase()

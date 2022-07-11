@@ -7,7 +7,7 @@ const auth = require('../Middleware/auth')
 router
     .route('/')
     .get(getPayments)
-    .patch(makePayment)
+    .post(makePayment)
 
 router
     .route('/type')

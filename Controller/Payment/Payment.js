@@ -41,6 +41,12 @@ const makePayment = async (req, res) => {
         { paymentTypeID: paymentTypeID, status: true },
         { where: { id: paymentID } }
     );
+
+    //update user active status
+    const payments = await Payment.findAll({ where: { userID: payment.userID } })
+    let counter = 0
+    payments.forEach(payment => (payment.status == false) ? counter += 1 : null)
+    if (counter < 2) await User.update({ active: true }, { where: { id: payment.userID } })
    
     //send updated data
     res.status(StatusCodes.OK).json(await Payment.findOne({ where: { id: paymentID } }))

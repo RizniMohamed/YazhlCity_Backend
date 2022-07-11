@@ -54,6 +54,7 @@ const getUsers = async (req, res) => {
         include: [
             { model: Auth, attributes: ['email'] },
             { model: Role, attributes: ['name'] },
+            { model: Payment },
         ]
     })
 
