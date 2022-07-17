@@ -4,8 +4,8 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 
-const notfound = require('./middleware/notfound')
-const { errorHandler } = require('./middleware/errorHandler')
+const notfound = require('./Middleware/notfound')
+const { errorHandler } = require('./Middleware/errorHandler')
 const { StatusCodes } = require('http-status-codes');
 const isDatabaseInitiated = require('./Model/index');
 

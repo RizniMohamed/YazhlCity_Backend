@@ -2,7 +2,7 @@ const router = require('express').Router()
 const auth = require('../Middleware/auth')
 const { StatusCodes } = require('http-status-codes')
 const { register, deleteUser, getUsers, updateUser } = require('../Controller/User/User')
-const { updateAuth, login } = require('../Controller/User/Auth')
+const { updateAuth, login, refreshToken } = require('../Controller/User/Auth')
 const { getRoles } = require('../Controller/User/Role')
 const { subscribe, unsubscribe } = require('../Controller/User/Hosteller')
 const upload = require('../Middleware/storeImage').single('image')
@@ -46,5 +46,10 @@ router
 router
     .route('/unsubscribe')
     .post(unsubscribe)
+
+router
+    .route('/token')
+    .post(refreshToken)
+
 
 module.exports = router

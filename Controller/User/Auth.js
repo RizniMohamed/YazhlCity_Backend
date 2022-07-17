@@ -43,7 +43,31 @@ const updateAuth = async (req, res) => {
     res.status(StatusCodes.OK).json(await Auth.findOne({ message : "Password updated"}))
 }
 
+const refreshToken = async (req, res) => {
+    try {
+        // check token and get that expired token 
+        const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+        // if token not available send error
+        if (!token) {
+            throw new JWT.JsonWebTokenError("No web token provided", StatusCodes.UNAUTHORIZED);
+        }
+        // check correct token
+        const expiredPayload = JWT.verify(token, process.env.JWT_SECRET, { ignoreExpiration: true });
+        // generate new token
+        let loginDetails = { userID: expiredPayload.userID, email: expiredPayload.email, role: expiredPayload.name };
+        const newToken = JWT.sign(loginDetails,process.env.JWT_SECRET,{ expiresIn: "1d" });
+        loginDetails.token = newToken;
+
+        //send logged in user details
+        res.status(StatusCodes.OK).json(loginDetails)
+
+    } catch (error) {
+        throw new APIError(error.message,StatusCodes.BAD_REQUEST);
+    }
+}
+
 module.exports = {
     login,
     updateAuth,
+    refreshToken
 }
