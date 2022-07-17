@@ -1,9 +1,15 @@
 require('express-async-errors')
 require('dotenv').config()
 
-const express = require('express')
-const app = express()
+//securities
+const cors = require('cors')
+const helmet = require('helmet')
+const xss = require('xss-clean')
+const rateLimit = require('express-rate-limit')
 
+const express = require('express')
+
+const app = express()
 const notfound = require('./Middleware/notfound')
 const { errorHandler } = require('./Middleware/errorHandler')
 const { StatusCodes } = require('http-status-codes');
@@ -17,9 +23,20 @@ const payment = require('./Router/Payment')
 const notification = require('./Router/Notifcation')
 
 //middlewares
-app.use(express.json()) //parse reqest body to JSON
+app.use(rateLimit({
+    windowMS: 15 * 60 * 1000, // 15 minutes,
+    max: 100
+}))
+app.use(helmet())
+app.use(cors({
+    origin: "http://localhost:3000",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+}))
+app.use(xss())
 app.use(express.static('./Storage')) //make image file is accessiblie to frontend
-
+app.use(express.json()) //parse reqest body to JSON
 //routes
 app.use("/API/V1/User", user)
 app.use("/API/V1/Boarding", boarding)
