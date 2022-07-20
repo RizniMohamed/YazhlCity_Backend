@@ -16,6 +16,7 @@ const createRoom = async (req, res) => {
     if (!req.file) throw new APIError("room image required", StatusCodes.BAD_REQUEST)
 
     // insert room
+    console.log();
     const roomImage = req.file.path.split('\\').slice(1).join('/')
     const room = await Room.create({ room_number: roomNumber, image: roomImage, person_count: personCount, price: price, type: type, boardingID: boardingID })
 

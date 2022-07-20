@@ -49,7 +49,7 @@ const createBoarding = async (req, res) => {
         await Boarding.findOne({
             where: { id: boarding.id },
             include: [
-                { model: Location, attributes: ['name'] },
+                { model: Location },
                 { model: User, include: [{ model: Role, attributes: ['name'] }, { model: Auth, attributes: ['email'] },] },
                 { model: BoardingImage, attributes: ['image'] },
                 { model: Washroom, attributes: ['image', "count", "description"] },
@@ -67,9 +67,11 @@ const getBoardings = async (req, res) => {
         order: order ??  ['updatedAt'],
         attributes,
         include: [
-            { model: Location, attributes: ['name'] },
+            { model: Location },
             { model: User, include: [{ model: Role, attributes: ['name'] }, { model: Auth, attributes: ['email'] },] },
-            { model: BoardingImage, attributes: ['image'] }
+            { model: BoardingImage, attributes: ['image'] },
+            { model: Washroom, attributes: ['image', "count", "description"] },
+            { model: Bathroom, attributes: ['image', "count", "description"] },
         ]
     })
 
@@ -100,7 +102,7 @@ const deleteBoarding = async (req, res) => {
 
 const updateBoarding = async (req, res) => {
     //filtering incoming data
-    const { name, mobile, address, roomType, description, gender, geoloc, locationID, rating, verfied, boardingID, washroomCount, washroomDesc, bathroomCount, bathroomDesc } = req.body
+    const { name, mobile, address, roomType, description, gender, geoloc, locationID, rating, verified, boardingID, washroomCount, washroomDesc, bathroomCount, bathroomDesc } = req.body
 
     //validation
     if (!boardingID) throw new APIError("boarding id required", StatusCodes.BAD_REQUEST)
@@ -110,7 +112,7 @@ const updateBoarding = async (req, res) => {
 
     //update boarding
     await Boarding.update(
-        { name, mobile: eval(mobile), address, roomType, description, gender, geoloc: eval(geoloc), locationID, rating, verfied, boardingID },
+        { name, mobile: eval(mobile), address, roomType, description, gender, geoloc: eval(geoloc), locationID, rating, verified, boardingID },
         { where: { id: boardingID } }
     )
 

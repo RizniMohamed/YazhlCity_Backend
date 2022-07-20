@@ -11,7 +11,7 @@ const express = require('express')
 
 const app = express()
 const notfound = require('./Middleware/notfound')
-const { errorHandler } = require('./Middleware/errorHandler')
+const { errorHandler, APIError } = require('./Middleware/errorHandler')
 const { StatusCodes } = require('http-status-codes');
 const isDatabaseInitiated = require('./Model/index');
 
@@ -25,14 +25,21 @@ const notification = require('./Router/Notifcation')
 //middlewares
 app.use(rateLimit({
     windowMS: 15 * 60 * 1000, // 15 minutes,
-    max: 100
+    max: 100,
+    message : "Maximum requests count reached, try on 15 minutes",
+    handler : function (req,res){
+        throw new APIError("Maximum requests count reached, try on 15 minutes", StatusCodes.TOO_MANY_REQUESTS)
+    }
 }))
-app.use(helmet())
 app.use(cors({
     origin: "http://localhost:3000",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     preflightContinue: false,
-    optionsSuccessStatus: 204
+    optionsSuccessStatus: 204,
+}))
+app.use(helmet({
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false,
 }))
 app.use(xss())
 app.use(express.static('./Storage')) //make image file is accessiblie to frontend
