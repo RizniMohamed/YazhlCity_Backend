@@ -7,7 +7,7 @@ const start = async () => {
         await require('./Config/TableAssociations')
         await require('./Config/InitialData')
         // await require('./Config/EventShedules')
-        // await sequelize.sync()
+        await sequelize.sync()
         return true // database and sequalize initializtion success
     } catch (error) {
         console.log(error);

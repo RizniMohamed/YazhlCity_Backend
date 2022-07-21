@@ -28,15 +28,15 @@ const createBoarding = async (req, res) => {
 
     // insert boarding images
     const boardingImages = req.files.boardingImages.map(file => file.path.split('\\').slice(1).join('/'))
-    boardingImages.forEach(async image => await BoardingImage.create({ image: image, boardingID: boarding.id }))
+    boardingImages.forEach(async image => await BoardingImage.create({ image: process.env.SERVER_BASE_URL + image, boardingID: boarding.id }))
 
     //insert washroom
     const washroomImage = req.files.washroomImage[0].path.split('\\').slice(1).join('/')
-    await Washroom.create({ count: washroomCount, description: washroomDesc, image: washroomImage, boardingID: boarding.id })
+    await Washroom.create({ count: washroomCount, description: washroomDesc, image: process.env.SERVER_BASE_URL + washroomImage, boardingID: boarding.id })
 
     //insert bathroom
     const bathroomImage = req.files.bathroomImage[0].path.split('\\').slice(1).join('/')
-    await Bathroom.create({ count: bathroomCount, description: bathroomDesc, image: bathroomImage, boardingID: boarding.id })
+    await Bathroom.create({ count: bathroomCount, description: bathroomDesc, image: process.env.SERVER_BASE_URL + bathroomImage, boardingID: boarding.id })
 
     // promote user to manager
     await User.update({ roleID: 2 }, { where: { id: userID } })
@@ -45,8 +45,9 @@ const createBoarding = async (req, res) => {
     await Payment.create({ amount: process.env.MANAGER_FEE, userID: userID })
 
     // send created boarding
-    res.status(StatusCodes.CREATED).json(
-        await Boarding.findOne({
+    res.status(StatusCodes.CREATED).json({
+        status: StatusCodes.OK,
+        data: await Boarding.findOne({
             where: { id: boarding.id },
             include: [
                 { model: Location },
@@ -56,15 +57,15 @@ const createBoarding = async (req, res) => {
                 { model: Bathroom, attributes: ['image', "count", "description"] },
             ]
         })
-    )
+    })
 }
 
 const getBoardings = async (req, res) => {
-    let {order, attributes, where} = findQueryLogic(req.query.where,req.query.order,req.query.select)
+    let { order, attributes, where } = findQueryLogic(req.query.where, req.query.order, req.query.select)
 
     const boardings = await Boarding.findAll({
         where,
-        order: order ??  ['updatedAt'],
+        order: order ?? ['updatedAt'],
         attributes,
         include: [
             { model: Location },
@@ -76,7 +77,10 @@ const getBoardings = async (req, res) => {
     })
 
     if (boardings.length !== 0)
-        res.status(StatusCodes.OK).json({ count: boardings.length, boardings })
+        res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            data: { count: boardings.length, boardings }
+        })
     else
         throw new APIError("No boardings found", StatusCodes.NOT_FOUND)
 }
@@ -97,7 +101,10 @@ const deleteBoarding = async (req, res) => {
     await User.update({ roleID: 4 }, { where: { id: deletedboarding.userID } })
 
     //send deleted boarding
-    res.status(StatusCodes.OK).json(deletedboarding)
+    res.status(StatusCodes.OK).json({
+        status: StatusCodes.OK,
+        data: deletedboarding
+    })
 }
 
 const updateBoarding = async (req, res) => {
@@ -133,25 +140,26 @@ const updateBoarding = async (req, res) => {
         const boardingImages = req.files.boardingImages.map(file => file.path.split('\\').slice(1).join('/'))
         await boardingImages.forEach(async image => {
             await BoardingImage.destroy({ where: { boardingID } })
-            await BoardingImage.create({ image, boardingID })
+            await BoardingImage.create({ image: process.env.SERVER_BASE_URL + image, boardingID })
         })
     }
 
     //update washroom image
     if (req.files.washroomImage) {
         const washroomImage = req.files.washroomImage[0].path.split('\\').slice(1).join('/')
-        await Washroom.update({ image: washroomImage }, { where: { boardingID } })
+        await Washroom.update({ image: process.env.SERVER_BASE_URL + washroomImage }, { where: { boardingID } })
     }
 
     //update bathroom image
     if (req.files.bathroomImage) {
         const bathroomImage = req.files.bathroomImage[0].path.split('\\').slice(1).join('/')
-        await Bathroom.update({ image: bathroomImage }, { where: { boardingID } })
+        await Bathroom.update({ image: process.env.SERVER_BASE_URL + bathroomImage }, { where: { boardingID } })
     }
 
     // send updated boarding
-    res.status(StatusCodes.CREATED).json(
-        await Boarding.findOne({
+    res.status(StatusCodes.CREATED).json({
+        status: StatusCodes.CREATED,
+        data: await Boarding.findOne({
             where: { id: boardingID },
             include: [
                 { model: Location, attributes: ['name'] },
@@ -161,7 +169,7 @@ const updateBoarding = async (req, res) => {
                 { model: Bathroom, attributes: ['image', "count", "description"] },
             ]
         })
-    )
+    })
 }
 
 module.exports = {

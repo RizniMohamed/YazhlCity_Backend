@@ -20,9 +20,12 @@ const getPayments = async (req, res) => {
     })
 
     if (payments.length !== 0)
-        res.status(StatusCodes.OK).json({ count: payments.length, payments })
+        res.status(StatusCodes.OK).json({
+            status : StatusCodes.OK,
+            data : { count: payments.length, payments }
+        })
     else
-        res.status(StatusCodes.NOT_FOUND).json({ message: "No payments found" })
+        throw new APIError("No payments found", StatusCodes.NOT_FOUND)
 }
 
 
@@ -68,7 +71,10 @@ const makePayment = async (req, res) => {
         if (counter < 2) await User.update({ active: true }, { where: { id: payment.userID } })
     
         //send updated data
-        res.status(StatusCodes.OK).json(await Payment.findOne({ where: { id: paymentID } }))
+        res.status(StatusCodes.OK).json({
+            status : StatusCodes.OK,
+            data: await Payment.findOne({ where: { id: paymentID } })
+        })
     } else {
         throw new APIError("Payment failed", StatusCodes.BAD_REQUEST);
     }

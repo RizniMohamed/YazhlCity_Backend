@@ -5,7 +5,10 @@ const PaymentType = require('../../Model/Payment/PaymentType')
 const getPaymentTypes = async (req, res) => {
     const paymentTypes = await PaymentType.findAll({ order: ['id'] })
     if (paymentTypes.length !== 0)
-        res.status(StatusCodes.OK).json({ count: paymentTypes.length, paymentTypes })
+        res.status(StatusCodes.OK).json({
+            status : StatusCodes.OK,
+            data : { count: paymentTypes.length, paymentTypes }
+        })
     else
         throw new APIError("No payment types found", StatusCodes.NOT_FOUND)
 }

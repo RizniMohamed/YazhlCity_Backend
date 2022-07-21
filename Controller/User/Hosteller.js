@@ -25,14 +25,18 @@ const subscribe = async (req, res) => {
     await Payment.create({ amount: room.price, userID: userID })
 
     //send updated data
-    res.status(StatusCodes.OK).json(await User.findOne({
-        where: { id: userID },
-        include: [
-            { model: Auth, attributes: ['email'] },
-            { model: Role, attributes: ['name'] },
-            { model: Payment },
-        ]
-    }))
+    res.status(StatusCodes.OK).json(
+        {
+            status: StatusCodes.OK,
+            data: await User.findOne({
+                where: { id: userID },
+                include: [
+                    { model: Auth, attributes: ['email'] },
+                    { model: Role, attributes: ['name'] },
+                    { model: Payment },
+                ]
+            })
+        })
 }
 
 const unsubscribe = async (req, res) => {
@@ -51,14 +55,17 @@ const unsubscribe = async (req, res) => {
     await Payment.destroy({ where: { userID: userID } })
 
     //send updated data
-    res.status(StatusCodes.OK).json(await User.findOne({
-        where: { id: userID },
-        include: [
-            { model: Auth, attributes: ['email'] },
-            { model: Role, attributes: ['name'] },
-            { model: Payment },
-        ]
-    }))
+    res.status(StatusCodes.OK).json({
+        status : StatusCodes.OK,
+        data: await User.findOne({
+            where: { id: userID },
+            include: [
+                { model: Auth, attributes: ['email'] },
+                { model: Role, attributes: ['name'] },
+                { model: Payment },
+            ]
+        })
+    })
 }
 
 module.exports = {

@@ -20,15 +20,15 @@ const createNotification = async (req, res) => {
     await notification.addUser(eval(to))
 
     // send created room
-    res.status(StatusCodes.CREATED).json(
-        await Notification.findOne({
+    res.status(StatusCodes.CREATED).json({
+        status: StatusCodes.CREATED,
+        data: await Notification.findOne({
             where: { id: notification.id },
             include: { model: User }
         })
-    )
+    })
 
 }
-
 
 const deleteNotification = async (req, res) => {
     //filtering incoming data
@@ -43,7 +43,10 @@ const deleteNotification = async (req, res) => {
     await Notification.destroy({ where: { id: notificationID } });
 
     //send deleted boarding
-    res.status(StatusCodes.OK).json(notification)
+    res.status(StatusCodes.OK).json({
+        status: StatusCodes.OK,
+        data: notification
+    })
 }
 
 const getNotifications = async (req, res) => {
@@ -57,7 +60,10 @@ const getNotifications = async (req, res) => {
     })
 
     if (notifications.length !== 0)
-        res.status(StatusCodes.OK).json({ count: notifications.length, notifications })
+        res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            data: { count: notifications.length, notifications }
+        })
     else
         throw new APIError("No notifications found", StatusCodes.NOT_FOUND)
 }
@@ -79,11 +85,13 @@ const getUnreadNotifications = async (req, res) => {
     }
 
     if (notifications.length !== 0)
-        res.status(StatusCodes.OK).json({ count: notifications.length, notifications: notifications })
+        res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            data: { count: notifications.length, notifications: notifications }
+        })
     else
         throw new APIError("No notifications found", StatusCodes.NOT_FOUND)
 }
-
 
 const notificationRead = async (req, res) => {
     //filtering incoming data
@@ -104,9 +112,11 @@ const notificationRead = async (req, res) => {
     )
 
     // send updated boarding
-    res.status(StatusCodes.CREATED).json({ message: "Notification read" })
+    res.status(StatusCodes.OK).json({
+        status: StatusCodes.OK,
+        data: "Notification read"
+    })
 }
-
 
 const updateNotification = async (req, res) => {
 
@@ -130,11 +140,12 @@ const updateNotification = async (req, res) => {
     await notification.addUser(eval(to))
 
     // send created room
-    res.status(StatusCodes.OK).json(
-        await Notification.findOne({
+    res.status(StatusCodes.OK).json({
+        status : StatusCodes.OK,
+        data: await Notification.findOne({
             where: { id: notification.id },
         })
-    )
+    })
 }
 
 module.exports = {

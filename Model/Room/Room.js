@@ -30,6 +30,10 @@ const Room = sequelize.define('Room', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     type: {
         type: DataTypes.ENUM('single', 'share'),
         allowNull: false,

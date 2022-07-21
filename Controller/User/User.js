@@ -19,7 +19,7 @@ const register = async (req, res) => {
         //create auth for created user
         const newAuth = await Auth.create({ email: email, password: password, userID: userID })
         //send created user details
-        res.status(StatusCodes.CREATED).json({ email, name, role: "user" })
+        res.status(StatusCodes.CREATED).json({ status: StatusCodes.CREATED, data: { email, name, role: "user" } })
     } catch (error) {
         //if error on auth creation, delete created user
         await User.destroy({ where: { id: userID } })
@@ -41,7 +41,7 @@ const deleteUser = async (req, res) => {
     await User.destroy({ where: { id: userID } });
 
     //send deleted user details
-    res.status(StatusCodes.OK).json(deletedUser)
+    res.status(StatusCodes.OK).json({ status: StatusCodes.OK, data: deletedUser })
 }
 
 const getUsers = async (req, res) => {
@@ -59,9 +59,9 @@ const getUsers = async (req, res) => {
     })
 
     if (users.length !== 0)
-        res.status(StatusCodes.OK).json({ count: users.length, users })
+        res.status(StatusCodes.OK).json({ status : StatusCodes.OK, data : {count: users.length, users }})
     else
-        res.status(StatusCodes.NOT_FOUND).json({ message: "No users found" })
+        throw new APIError("No users found", StatusCodes.NOT_FOUND)
 }
 
 const updateUser = async (req, res) => {
@@ -81,13 +81,16 @@ const updateUser = async (req, res) => {
 
     //update user image 
     if (req.file) {
-        let userImage = req.file.path.split('\\').slice(1).join('/')
+        let userImage = process.env.SERVER_BASE_URL + req.file.path.split('\\').slice(1).join('/')
         await User.update({ image: userImage }, { where: { id: userID } });
     }
-   
+
 
     //send updated data
-    res.status(StatusCodes.OK).json(await User.findOne({ where: { id: userID } }))
+    res.status(StatusCodes.OK).json({
+        status : StatusCodes.OK,
+        data: await User.findOne({ where: { id: userID } })
+    })
 }
 
 module.exports = {

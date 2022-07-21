@@ -28,7 +28,7 @@ const login = async (req, res) => {
     loginDetails.token = token
 
     //send logged in user details
-    res.status(StatusCodes.OK).json(loginDetails)
+    res.status(StatusCodes.OK).json({ status: StatusCodes.OK, data: loginDetails })
 }
 
 
@@ -40,7 +40,7 @@ const updateAuth = async (req, res) => {
     //update user
     await Auth.update({ password }, { where: { userID } });
     //send updated details
-    res.status(StatusCodes.OK).json(await Auth.findOne({ message : "Password updated"}))
+    res.status(StatusCodes.OK).json({ status: StatusCodes.OK, data: await Auth.findOne({ message: "Password updated" }) })
 }
 
 const refreshToken = async (req, res) => {
@@ -55,14 +55,14 @@ const refreshToken = async (req, res) => {
         const expiredPayload = JWT.verify(token, process.env.JWT_SECRET, { ignoreExpiration: true });
         // generate new token
         let loginDetails = { userID: expiredPayload.userID, email: expiredPayload.email, role: expiredPayload.name };
-        const newToken = JWT.sign(loginDetails,process.env.JWT_SECRET,{ expiresIn: "1d" });
+        const newToken = JWT.sign(loginDetails, process.env.JWT_SECRET, { expiresIn: "1d" });
         loginDetails.token = newToken;
 
         //send logged in user details
-        res.status(StatusCodes.OK).json(loginDetails)
+        res.status(StatusCodes.OK).json({ status: StatusCodes.OK, data: loginDetails })
 
     } catch (error) {
-        throw new APIError(error.message,StatusCodes.BAD_REQUEST);
+        throw new APIError(error.message, StatusCodes.BAD_REQUEST);
     }
 }
 

@@ -12,15 +12,15 @@ class APIError extends Error {
 const errorHandler = (err, req, res, next) => {
 
     if (err instanceof JsonWebTokenError)
-        return res.status(err.inner).json({ message: err.message })
+        return res.status(StatusCodes.OK).json({ status: err.inner, data: err.message })
 
     if (err instanceof ValidationError)
-        return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })
+        return res.status(StatusCodes.OK).json({ status: StatusCodes.BAD_REQUEST, data: err.message })
 
     if (err instanceof Error)
-        return res.status(err.code).json({ message: err.message })
+        return res.status(StatusCodes.OK).json({ status: err.code, data: err.message })
 
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message })
+    return res.status(StatusCodes.OK).json({ status: StatusCodes.INTERNAL_SERVER_ERROR, data: err.message })
 }
 
 module.exports = {errorHandler, APIError}

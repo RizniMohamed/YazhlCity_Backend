@@ -3,11 +3,12 @@ const { APIError } = require("../../Middleware/errorHandler")
 const Boarding = require("../../Model/Boarding/Boarding")
 const Facility = require("../../Model/Room/Facility")
 const Room = require("../../Model/Room/Room")
+const User = require("../../Model/User/User")
 const findQueryLogic = require("../FindQueryLogic")
 
 const createRoom = async (req, res) => {
     //filtering incoming data
-    const { roomNumber, personCount, price, type, facilityID, boardingID } = req.body
+    const { roomNumber, personCount, price, type, facilityID, boardingID, description } = req.body
 
     //validation
     if (!boardingID) throw new APIError("boardingID required", StatusCodes.BAD_REQUEST)
@@ -16,25 +17,25 @@ const createRoom = async (req, res) => {
     if (!req.file) throw new APIError("room image required", StatusCodes.BAD_REQUEST)
 
     // insert room
-    console.log();
-    const roomImage = req.file.path.split('\\').slice(1).join('/')
-    const room = await Room.create({ room_number: roomNumber, image: roomImage, person_count: personCount, price: price, type: type, boardingID: boardingID })
+    const roomImage = process.env.SERVER_BASE_URL + req.file.path.split('\\').slice(1).join('/')
+    const room = await Room.create({ room_number: roomNumber, image: roomImage, person_count: personCount, description: description, price: price, type: type, boardingID: boardingID })
 
     // insert facilities
     await room.addFacility(eval(facilityID))
 
     // send created room
-    res.status(StatusCodes.CREATED).json(
-        await Room.findOne({
+    res.status(StatusCodes.CREATED).json({
+        status: StatusCodes.CREATED,
+        data: await Room.findOne({
             where: { id: room.id },
             include: { model: Facility, attributes: ['id', 'name'] }
         })
-    )
+    })
 }
 
 const updateRoom = async (req, res) => {
     //filtering incoming data
-    const { personCount, price, type, roomID } = req.body
+    const { personCount, price, type, roomID, description } = req.body
 
     //validation
     if (!roomID) throw new APIError("roomID required", StatusCodes.BAD_REQUEST)
@@ -43,20 +44,21 @@ const updateRoom = async (req, res) => {
 
     // update room
     await Room.update(
-        { person_count: personCount, price: price, type: type },
+        { person_count: personCount, price: price, type: type, description: description },
         { where: { id: roomID } }
     )
 
     //update room image
     if (req.file) {
-        const roomImage = req.file.path.split('\\').slice(1).join('/')
+        const roomImage = process.env.SERVER_BASE_URL + req.file.path.split('\\').slice(1).join('/')
         await Room.update({ image: roomImage }, { where: { id: roomID } })
     }
 
     // send updated room
-    res.status(StatusCodes.CREATED).json(
-        await Room.findOne({ where: { id: roomID } })
-    )
+    res.status(StatusCodes.CREATED).json({
+        status: StatusCodes.OK,
+        data: await Room.findOne({ where: { id: roomID } })
+    })
 }
 
 const deleteRoom = async (req, res) => {
@@ -72,7 +74,10 @@ const deleteRoom = async (req, res) => {
     await Room.destroy({ where: { id: roomID } });
 
     //send deleted room details
-    res.status(StatusCodes.OK).json(deletedRoom)
+    res.status(StatusCodes.OK).json({
+        status: StatusCodes.OK,
+        data: deletedRoom
+    })
 }
 
 const getRooms = async (req, res) => {
@@ -85,10 +90,18 @@ const getRooms = async (req, res) => {
         include: { model: Facility, attributes: ['id', 'name'] }
     })
 
-    if (rooms.length !== 0)
-        res.status(StatusCodes.OK).json({ count: rooms.length, rooms })
+    if (rooms.length !== 0) {
+        for (const room of rooms) {
+            room.dataValues.occupaidCounts = await User.count({ where: { roomID: room.id } })
+            room.dataValues.availability = room.dataValues.person_count === room.dataValues.occupaidCounts ? false : true
+        }
+        res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            data: { count: rooms.length, rooms: rooms }
+        })
+    }
     else
-        res.status(StatusCodes.NOT_FOUND).json({ message: "No rooms found" })
+        throw new APIError("No rooms found", StatusCodes.NOT_FOUND)
 }
 
 module.exports = {
