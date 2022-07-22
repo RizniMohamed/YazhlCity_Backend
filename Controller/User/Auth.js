@@ -66,8 +66,25 @@ const refreshToken = async (req, res) => {
     }
 }
 
+
+const verifyEmail = async (req, res) => {
+    const { email } = req.body
+
+    if (!email) throw new APIError("Email required", StatusCodes.BAD_REQUEST)
+
+    const user = await Auth.findOne({
+        where: { email: email }
+    })
+
+    if (user)
+        res.status(StatusCodes.OK).json({ status: StatusCodes.OK, data: { user } })
+    else
+        throw new APIError("No users found", StatusCodes.NOT_FOUND)
+}
+
 module.exports = {
     login,
     updateAuth,
-    refreshToken
+    refreshToken,
+    verifyEmail
 }

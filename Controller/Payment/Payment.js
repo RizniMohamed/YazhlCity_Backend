@@ -5,7 +5,7 @@ const PaymentType = require('../../Model/Payment/PaymentType')
 const User = require('../../Model/User/User')
 const findQueryLogic = require('../FindQueryLogic')
 const stripe = require('stripe')(process.env.STRIPE_SECRETE_KEY);
-
+const { v4: uuidv4 } = require('uuid');
 
 const getPayments = async (req, res) => {
     let { order, attributes, where } = findQueryLogic(req.query.where, req.query.order, req.query.select)
@@ -21,8 +21,8 @@ const getPayments = async (req, res) => {
 
     if (payments.length !== 0)
         res.status(StatusCodes.OK).json({
-            status : StatusCodes.OK,
-            data : { count: payments.length, payments }
+            status: StatusCodes.OK,
+            data: { count: payments.length, payments }
         })
     else
         throw new APIError("No payments found", StatusCodes.NOT_FOUND)
@@ -31,7 +31,7 @@ const getPayments = async (req, res) => {
 
 const makePayment = async (req, res) => {
     //filtering incoming data
-    const { paymentTypeID,  paymentID, stripeToken } = req.body
+    const { paymentTypeID, paymentID, stripeToken, userID } = req.body
 
     //validation
     if (!paymentTypeID) throw new APIError("paymentTypeID is required", StatusCodes.BAD_REQUEST)
@@ -48,16 +48,16 @@ const makePayment = async (req, res) => {
         source: stripeToken.id
     })
 
-    const paymentStripe = await stripe.charges.create({
-        amount: payment.amount, // * 100
-        currency: 'lkr',
+    const paymentStripe = await stripe.paymentIntents.create({
+        amount: payment.amount * 100,
+        currency: 'LKR',
         customer: customer.id,
         receipt_email: stripeToken.email
     }, {
         idempotencyKey: uuidv4()
     })
 
-    if(paymentStripe){
+    if (paymentStripe) {
         //update payment
         await Payment.update(
             { paymentTypeID: paymentTypeID, status: true },
@@ -69,10 +69,10 @@ const makePayment = async (req, res) => {
         let counter = 0
         payments.forEach(payment => (payment.status == false) ? counter += 1 : null)
         if (counter < 2) await User.update({ active: true }, { where: { id: payment.userID } })
-    
+
         //send updated data
         res.status(StatusCodes.OK).json({
-            status : StatusCodes.OK,
+            status: StatusCodes.OK,
             data: await Payment.findOne({ where: { id: paymentID } })
         })
     } else {

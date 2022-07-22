@@ -5,6 +5,7 @@ const Role = require("../User/Role");
 const User = require("../User/User");
 const Auth = require("../User/Auth");
 const Room = require("../Room/Room");
+const Boarding = require("../Boarding/Boarding");
 
 //roles
 (async () => {
@@ -106,14 +107,14 @@ const Room = require("../Room/Room");
 
 //create admin
 (async () => {
+    await Boarding.sync()
     await Room.sync()
     await User.sync();
     await Auth.sync();
     const users = await User.findAll()
     const auths = await Auth.findAll()
     if (users.length === 0 && auths.length === 0) {
-        const { id: userID } = await User.create({ name: "Rizni Mohamed" })
-        const newAuth = await Auth.create({ email: "mnriznimohamed@gmail.com", password: "0775824807", userID: userID, role : 1 })
+        const { id: userID } = await User.create({ name: "Rizni Mohamed", roleID: 1 })
+        const newAuth = await Auth.create({ email: "mnriznimohamed@gmail.com", password: "0775824807", userID: userID })
     }
-
 })();
