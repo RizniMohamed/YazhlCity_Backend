@@ -17,7 +17,7 @@ const uploadMiddleware = (req, res, next) => {
 router
     .route('/')
     .post(auth,uploadMiddleware, createBoarding)
-    .get(getBoardings)
+    .get(auth,getBoardings)
     .patch(auth,uploadMiddleware, updateBoarding)
     .delete(auth,deleteBoarding)
 

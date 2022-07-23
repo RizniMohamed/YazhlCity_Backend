@@ -5,6 +5,7 @@ const JWT = require('jsonwebtoken')
 const Auth = require("../../Model/User/Auth")
 const User = require("../../Model/User/User")
 const Role = require("../../Model/User/Role")
+const findQueryLogic = require("../FindQueryLogic")
 
 const login = async (req, res) => {
     //filtering incoming data
@@ -24,7 +25,7 @@ const login = async (req, res) => {
     const loginDetails = { userID: auth.userID, email, role: role.name }
 
     //generate JWT token
-    const token = JWT.sign(loginDetails, process.env.JWT_SECRET, { expiresIn: "1d" })
+    const token = JWT.sign(loginDetails, process.env.JWT_SECRET, { expiresIn: "1m" })
     loginDetails.token = token
 
     //send logged in user details
@@ -55,7 +56,7 @@ const refreshToken = async (req, res) => {
         const expiredPayload = JWT.verify(token, process.env.JWT_SECRET, { ignoreExpiration: true });
         // generate new token
         let loginDetails = { userID: expiredPayload.userID, email: expiredPayload.email, role: expiredPayload.name };
-        const newToken = JWT.sign(loginDetails, process.env.JWT_SECRET, { expiresIn: "1d" });
+        const newToken = JWT.sign(loginDetails, process.env.JWT_SECRET, { expiresIn: "2m" });
         loginDetails.token = newToken;
 
         //send logged in user details
@@ -82,9 +83,27 @@ const verifyEmail = async (req, res) => {
         throw new APIError("No users found", StatusCodes.NOT_FOUND)
 }
 
+const getAuths = async (req,res) =>{
+    let { order, attributes, where } = findQueryLogic(req.query.where, req.query.order, req.query.select)
+
+    const users = await Auth.findAll({
+        where,
+        order: order ?? ['id'],
+        attributes,
+    })
+
+    if (users.length !== 0)
+        res.status(StatusCodes.OK).json({ status: StatusCodes.OK, data: { count: users.length, users } })
+    else
+        throw new APIError("No users found", StatusCodes.NOT_FOUND)
+}
+
+
+
 module.exports = {
     login,
     updateAuth,
     refreshToken,
-    verifyEmail
+    verifyEmail,
+    getAuths
 }

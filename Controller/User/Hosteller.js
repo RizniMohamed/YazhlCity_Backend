@@ -5,10 +5,11 @@ const Role = require('../../Model/User/Role');
 const Payment = require('../../Model/Payment/Payment')
 const Room = require('../../Model/Room/Room');
 const Auth = require('../../Model/User/Auth');
+const { Stripe } = require('../Payment/Stripe');
 
 const subscribe = async (req, res) => {
     //filtering incoming data
-    const { userID, roomID } = req.body
+    const { userID, roomID, payment_USD } = req.body
 
     //validation
     if (!userID) throw new APIError("User id is required", StatusCodes.BAD_REQUEST)
@@ -18,24 +19,22 @@ const subscribe = async (req, res) => {
     const room = await Room.findOne({ where: { id: roomID } })
     if (!room) throw new APIError("room not found", StatusCodes.NOT_FOUND)
 
+    //payment
+    req.body.amount = payment_USD
+    const paymentStripe = await Stripe(req)
+    if (!paymentStripe) throw new APIError("Payment Error", StatusCodes.BAD_GATEWAY)
+
     //promote user to hosteller
     await User.update({ roomID: roomID, roleID: 3 }, { where: { id: userID } });
 
     //create hostteller first payment
-    await Payment.create({ amount: room.price, userID: userID })
+    await Payment.create({ amount: room.price, userID: userID, status: true })
 
     //send updated data
     res.status(StatusCodes.OK).json(
         {
             status: StatusCodes.OK,
-            data: await User.findOne({
-                where: { id: userID },
-                include: [
-                    { model: Auth, attributes: ['email'] },
-                    { model: Role, attributes: ['name'] },
-                    { model: Payment },
-                ]
-            })
+            data: paymentStripe
         })
 }
 
@@ -56,7 +55,7 @@ const unsubscribe = async (req, res) => {
 
     //send updated data
     res.status(StatusCodes.OK).json({
-        status : StatusCodes.OK,
+        status: StatusCodes.OK,
         data: await User.findOne({
             where: { id: userID },
             include: [

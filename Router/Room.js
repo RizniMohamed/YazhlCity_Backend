@@ -16,10 +16,10 @@ const uploadMiddleware = (req, res, next) => {
 
 router
     .route('/')
-    .post(auth,uploadMiddleware, createRoom)
-    .patch(auth,uploadMiddleware, updateRoom)
-    .delete(auth,deleteRoom)
-    .get(getRooms)
+    .post(auth, uploadMiddleware, createRoom)
+    .patch(auth, uploadMiddleware, updateRoom)
+    .delete(auth, deleteRoom)
+    .get(auth, getRooms)
 
 router
     .route('/facility')
