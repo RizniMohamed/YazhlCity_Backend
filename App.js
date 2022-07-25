@@ -23,14 +23,14 @@ const payment = require('./Router/Payment')
 const notification = require('./Router/Notifcation')
 
 //middlewares
-app.use(rateLimit({
-    windowMS: 15 * 60 * 1000, // 15 minutes,
-    max: 100,
-    message : "Maximum requests count reached, try on 15 minutes",
-    handler : function (req,res){
-        throw new APIError("Maximum requests count reached, try on 15 minutes", StatusCodes.TOO_MANY_REQUESTS)
-    }
-}))
+// app.use(rateLimit({
+//     windowMS: 15 * 60 * 1000, // 15 minutes,
+//     max: 100,
+//     message : "Maximum requests count reached, try on 15 minutes",
+//     handler : function (req,res){
+//         throw new APIError("Maximum requests count reached, try on 15 minutes", StatusCodes.TOO_MANY_REQUESTS)
+//     }
+// }))
 app.use(cors({
     origin: "http://localhost:3000",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",

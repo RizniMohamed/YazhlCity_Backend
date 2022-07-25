@@ -56,14 +56,14 @@ const refreshToken = async (req, res) => {
         const expiredPayload = JWT.verify(token, process.env.JWT_SECRET, { ignoreExpiration: true });
         // generate new token
         let loginDetails = { userID: expiredPayload.userID, email: expiredPayload.email, role: expiredPayload.name };
-        const newToken = JWT.sign(loginDetails, process.env.JWT_SECRET, { expiresIn: "2m" });
+        const newToken = JWT.sign(loginDetails, process.env.JWT_SECRET, { expiresIn: "1m" });
         loginDetails.token = newToken;
 
         //send logged in user details
         res.status(StatusCodes.OK).json({ status: StatusCodes.OK, data: loginDetails })
 
     } catch (error) {
-        throw new APIError(error.message, StatusCodes.BAD_REQUEST);
+        res.status(StatusCodes.UNAUTHORIZED).json({ data: error.message })
     }
 }
 
@@ -83,7 +83,7 @@ const verifyEmail = async (req, res) => {
         throw new APIError("No users found", StatusCodes.NOT_FOUND)
 }
 
-const getAuths = async (req,res) =>{
+const getAuths = async (req, res) => {
     let { order, attributes, where } = findQueryLogic(req.query.where, req.query.order, req.query.select)
 
     const users = await Auth.findAll({

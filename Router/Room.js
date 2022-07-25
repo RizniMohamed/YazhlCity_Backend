@@ -19,7 +19,7 @@ router
     .post(auth, uploadMiddleware, createRoom)
     .patch(auth, uploadMiddleware, updateRoom)
     .delete(auth, deleteRoom)
-    .get(auth, getRooms)
+    .get(getRooms)
 
 router
     .route('/facility')
