@@ -44,6 +44,7 @@ app.use(helmet({
 app.use(xss())
 app.use(express.static('./Storage')) //make image file is accessiblie to frontend
 app.use(express.json()) //parse reqest body to JSON
+app.use(express.urlencoded({extended:true}))
 //routes
 app.use("/API/V1/User", user)
 app.use("/API/V1/Boarding", boarding)

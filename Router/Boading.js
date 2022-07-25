@@ -7,23 +7,29 @@ const upload = require('../Middleware/storeImage').fields([{ name: "boardingImag
 
 const uploadMiddleware = (req, res, next) => {
     upload(req, res, err => {
-        if (err)
-            res.status(StatusCodes.BAD_REQUEST).send(`${err.message} ${err.field}. Expected boardingImages or washroomImage or bathroomImage`)
-        else
+        if (err) {
+            console.log("**************************");
+            console.log(err.message, err.field);
+            return res.status(StatusCodes.OK).json(`${err.message} ${err.field}. Expected boardingImages or washroomImage or bathroomImage`)
+        }
+        else{
+            console.log("----------------------------");
             next()
+
+        }
     })
 }
 
 router
     .route('/')
-    .post(auth,uploadMiddleware, createBoarding)
+    .post( uploadMiddleware, createBoarding)
     .get(getBoardings)
-    .patch(auth,uploadMiddleware, updateBoarding)
-    .delete(auth,deleteBoarding)
+    .patch(auth, uploadMiddleware, updateBoarding)
+    .delete(auth, deleteBoarding)
 
 router
     .route('/location')
     .get(getLocations)
 
-    
+
 module.exports = router

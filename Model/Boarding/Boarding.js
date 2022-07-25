@@ -27,16 +27,6 @@ const Boarding = sequelize.define('Boarding', {
             msg: 'address already in use'
         }
     },
-    roomType: {
-        type: DataTypes.ENUM('single', 'share', 'both'),
-        allowNull: false,
-        validate: {
-            isIn: {
-                args: [['single', 'share']],
-                msg: "Must be 'single' or 'share' or 'both'"
-            }
-        }
-    },
     description: {
         type: DataTypes.STRING,
         allowNull: false,

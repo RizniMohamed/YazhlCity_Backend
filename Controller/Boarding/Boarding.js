@@ -13,7 +13,7 @@ const findQueryLogic = require('../FindQueryLogic')
 
 const createBoarding = async (req, res) => {
     //filtering incoming data
-    const { name, mobile, address, roomType, description, gender, geoloc, locationID, userID, washroomCount, washroomDesc, bathroomCount, bathroomDesc } = req.body
+    const { name, mobile, address, description, gender, geoloc, locationID, userID, washroomCount, washroomDesc, bathroomCount, bathroomDesc } = req.body
 
     //validation
     if (!userID) throw new APIError("UserID required", StatusCodes.BAD_REQUEST)
@@ -24,7 +24,7 @@ const createBoarding = async (req, res) => {
     if (!req.files.bathroomImage) throw new APIError("bathroom image required", StatusCodes.BAD_REQUEST)
 
     // insert boarding
-    const boarding = await Boarding.create({ name: name, mobile: eval(mobile), address: address, roomType: roomType, description: description, gender: gender, geoloc: eval(geoloc), locationID: locationID, userID: userID })
+    const boarding = await Boarding.create({ name: name, mobile: eval(mobile), address: address, description: description, gender: gender, geoloc: eval(geoloc), locationID: locationID, userID: userID })
 
     // insert boarding images
     const boardingImages = req.files.boardingImages.map(file => file.path.split('\\').slice(1).join('/'))
@@ -109,7 +109,7 @@ const deleteBoarding = async (req, res) => {
 
 const updateBoarding = async (req, res) => {
     //filtering incoming data
-    const { name, mobile, address, roomType, description, gender, geoloc, locationID, rating, verified, boardingID, washroomCount, washroomDesc, bathroomCount, bathroomDesc } = req.body
+    const { name, mobile, address, description, gender, geoloc, locationID, rating, verified, boardingID, washroomCount, washroomDesc, bathroomCount, bathroomDesc } = req.body
 
     //validation
     if (!boardingID) throw new APIError("boarding id required", StatusCodes.BAD_REQUEST)
@@ -119,7 +119,7 @@ const updateBoarding = async (req, res) => {
 
     //update boarding
     await Boarding.update(
-        { name, mobile: eval(mobile), address, roomType, description, gender, geoloc: eval(geoloc), locationID, rating, verified, boardingID },
+        { name, mobile: eval(mobile), address, description, gender, geoloc: eval(geoloc), locationID, rating, verified, boardingID },
         { where: { id: boardingID } }
     )
 
