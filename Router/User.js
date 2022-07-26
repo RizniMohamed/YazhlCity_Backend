@@ -5,14 +5,18 @@ const { register, deleteUser, getUsers, updateUser } = require('../Controller/Us
 const { updateAuth, login, refreshToken, verifyEmail, getAuths } = require('../Controller/User/Auth')
 const { getRoles } = require('../Controller/User/Role')
 const { subscribe, unsubscribe } = require('../Controller/User/Hosteller')
-const upload = require('../Middleware/storeImage').single('image')
+const { APIError } = require('../Middleware/errorHandler')
+const upload = require('../Middleware/storeImage')
 
-const uploadMiddleware = (req, res, next) => {
-    upload(req, res, err => {
-        if (err)
-            res.status(StatusCodes.BAD_REQUEST).send(`${err.message} ${err.field}. Expected image`)
-        else
-            next()
+
+const uploadMiddleware = async (req, res, next) => {
+    upload.single('image')(req, res, (err) => {
+        if (err) {
+            const msg = `${err.message} ${err.field}. Expected image`
+            console.log(msg);
+            return res.status(StatusCodes.OK).json({ status: StatusCodes.BAD_REQUEST, data: msg })
+        }
+        else { next() }
     })
 }
 
@@ -41,7 +45,7 @@ router
 
 router
     .route('/auth')
-    .get(auth,getAuths)
+    .get(auth, getAuths)
 
 router
     .route('/register')

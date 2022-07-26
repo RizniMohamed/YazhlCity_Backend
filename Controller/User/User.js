@@ -59,17 +59,17 @@ const getUsers = async (req, res) => {
     })
 
     if (users.length !== 0)
-        res.status(StatusCodes.OK).json({ status : StatusCodes.OK, data : {count: users.length, users }})
+        res.status(StatusCodes.OK).json({ status: StatusCodes.OK, data: { count: users.length, users } })
     else
         throw new APIError("No users found", StatusCodes.NOT_FOUND)
 }
 
 const updateUser = async (req, res) => {
     //filtering incoming data
-    const { userID, name, gender, address, mobile, nic, roleID, roomID } = req.body
+    const { userID, name, gender, address, mobile, nic } = req.body
 
     //validation
-    if (!userID) throw new APIError("User id is required", StatusCodes.BAD_REQUEST)
+    if (!userID) throw new APIError("userID is required", StatusCodes.BAD_REQUEST)
     const user = await User.findOne({ where: { id: userID } })
     if (!user) throw new APIError("User not found", StatusCodes.NOT_FOUND)
 
@@ -78,6 +78,8 @@ const updateUser = async (req, res) => {
         { name: name, gender: gender, address: address, mobile: mobile, nic: nic },
         { where: { id: userID } }
     );
+
+    console.log(a);
 
     //update user image 
     if (req.file) {
@@ -88,7 +90,7 @@ const updateUser = async (req, res) => {
 
     //send updated data
     res.status(StatusCodes.OK).json({
-        status : StatusCodes.OK,
+        status: StatusCodes.OK,
         data: await User.findOne({ where: { id: userID } })
     })
 }
